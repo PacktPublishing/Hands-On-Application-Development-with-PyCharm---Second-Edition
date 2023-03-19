@@ -1,0 +1,2 @@
+def perfection():
+    return True

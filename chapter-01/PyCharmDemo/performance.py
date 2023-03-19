@@ -11,7 +11,7 @@ def bubble_sort(input_array):
 
 
 test_array = []
-for x in range(100000):
+for x in range(10000):
     test_array.append(random.randint(1, 10000))
 
 
