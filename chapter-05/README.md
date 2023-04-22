@@ -1,0 +1,2 @@
+# Chapter 5: Version Control with Git in PyCharm
+This chapter is all about working with the Git version control system.  since you can't have a Git repository inside another Git repository, I've zipped the repositories here.
