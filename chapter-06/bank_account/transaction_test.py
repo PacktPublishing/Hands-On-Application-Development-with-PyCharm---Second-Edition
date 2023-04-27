@@ -22,6 +22,7 @@ class TestTransaction(TestCase):
                          39.95)
 
     def test_transaction_overdraw_fault(self):
+        seller_account.balance = 4000
         buyer_account = BankAccount("Bruce Van Horn", "123355-23434", 5)
         test_transaction = Transaction(buyer_account, seller_account,
                                        item)
