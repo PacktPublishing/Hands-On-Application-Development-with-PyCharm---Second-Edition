@@ -2,31 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3
-    .0/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384
-          -9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
-          crossorigin="anonymous">
     <title>Python Libraries R Us</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+          crossorigin="anonymous">
+
+    <link href="{{ url_for('static', filename='index.css') }}"
+          rel="stylesheet"
+          type="text/css">
+
 </head>
 <body>
-    <h1>Python Libraries R Us</h1>
-    <h2>The the libraries that are fit to use!</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>Library Name</th>
-            <th>Description</th>
-            <th>Rating</th>
-            <th>URL</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td colspan="4">No libraries to display</td>
-        </tr>
-        </tbody>
-    </table>
+<div class="container-fluid h-100">
+    <div class="row">
+        <div class="col-12">
+            <h1>Python Libraries <span class="flipped-letter">R</span> Us</h1>
+            <h2>All the libraries that are fit to use!</h2>
+            <hr/>
+        </div>
+    </div>
+    <div class="row fullHeight">
+        <div class="col-8">
+            <h5>Here are the libraries:</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Library Name</th>
+                    <th>Description</th>
+                    <th>Rating</th>
+                    <th>URL</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if library_data|length > 0 %}
+                    {% for data in library_data %}
+                        <tr>
+                            <td>{{ data.python_library }} </td>
+                            <td>{{ data.description }}</td>
+                            <td>
+                                {% for _ in range(data.rating) %}
+                                    <i class="fas fa-star gold-star"></i>
+                                {% endfor %}
+                            </td>
+                            <td><a href="{{ data.url }}"
+                                   target="_blank">View on pypi.org</a></td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4">No libraries to display</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
 
+    </div>
+</div>
 </body>
 </html>

@@ -1,0 +1,13 @@
+body {
+    margin: 92px;
+    height: 100%;
+}
+
+.flipped-letter {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
+.gold-star {
+    color: gold;
+}
