@@ -1,0 +1,96 @@
+# Test your FastAPI endpoints
+
+GET {{protocol}}{{base_url}}:{{port}}
+Accept: application/json
+
+###
+
+GET {{protocol}}{{base_url}}:{{port}}/hello/User
+Accept: application/json
+
+###
+
+GET {{protocol}}{{base_url}}:{{port}}/api/{{api_version}}/names
+
+> {%
+ client.test("Request executed and 200 returned", function() {
+     client.assert(response.status === 200, `Response status is ${response
+         .status} but should be 200`);
+ });
+
+ client.test("Response should be json", function() {
+     const type = response.contentType.mimeType;
+
+     client.assert(type === "application/json", `Expected application/json
+     but got ${type}`);
+ });
+ %}
+
+###
+
+POST {{protocol}}{{base_url}}:{{port}}/api/{{api_version}}/names
+Content-Type: application/json
+
+{
+  "name": "Kinnari"
+}
+> {%
+ client.test("Request executed and 201 returned", function() {
+     client.assert(response.status === 201, `Response status is ${response
+         .status} but should be 201`);
+ });
+
+ client.test("Response should be json", function() {
+     const type = response.contentType.mimeType;
+
+     client.assert(type === "application/json", `Expected application/json
+     but got ${type}`);
+ });
+ %}
+
+###
+
+PUT {{protocol}}{{base_url}}:{{port}}/api/{{api_version}}/names
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Prajakta"
+}
+
+###
+
+PUT {{protocol}}{{base_url}}:{{port}}/api/{{api_version}}/names
+Content-Type: application/json
+
+{
+  "id": 1000,
+  "name": "Nobody"
+}
+
+> {%
+  client.test("Bad request executed and 404 returned", function() {
+     client.assert(response.status === 404, `Response status is ${response
+         .status} but should be 404`);
+ });
+ %}
+
+###
+PUT {{protocol}}{{base_url}}:{{port}}/api/{{api_version}}/names
+Content-Type: application/json
+
+{
+  "id": "Not a number",
+  "name": "Nobody"
+}
+
+> {%
+  client.test("Bad request executed and 400 returned", function() {
+     client.assert(response.status === 400, `Response status is ${response
+         .status} but should be 400`);
+ });
+ %}
+
+###
+
+DELETE {{protocol}}{{base_url}}:{{port}}/api/{{api_version}}/names/0
