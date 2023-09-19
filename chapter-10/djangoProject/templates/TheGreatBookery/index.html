@@ -1,7 +1,7 @@
 {% if latest_books %}
     <ul>
         {% for book in latest_books %}
-            <li>{{ book }}</li>
+            <li>{{  book.title }} by {{ book.author }} }}</li>
         {% endfor %}
     </ul>
 {% else %}
