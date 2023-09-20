@@ -4,23 +4,20 @@ import numpy as np
 import os
 import gc
 
-
-#%% Read in data
+# %% Read in data
 
 user_file_list = os.listdir('data/Archived users/')
 user_set_v1 = set(map(lambda x: x[5: 15], user_file_list))  # [5: 15] to return just the user IDs
 
-
 tappy_file_list = os.listdir('data/Tappy Data/')
 user_set_v2 = set(map(lambda x: x[: 10], tappy_file_list))  # [: 10] to return just the user IDs
-
 
 user_set = user_set_v1.intersection(user_set_v2)
 
 print(len(user_set))
 
 
-#%% Format into a Pandas dataframe
+# %% Format into a Pandas dataframe
 
 def read_user_file(file_name):
     f = open('data/Archived users/' + file_name)
@@ -29,6 +26,7 @@ def read_user_file(file_name):
 
     return data
 
+
 files = os.listdir('data/Archived users/')
 
 columns = [
@@ -36,38 +34,36 @@ columns = [
     'Sided', 'UPDRS', 'Impact', 'Levadopa', 'DA', 'MAOB', 'Other'
 ]
 
-user_df = pd.DataFrame(columns=columns) # empty Data Frame for now
+user_df = pd.DataFrame(columns=columns)  # empty Data Frame for now
 
 for user_id in user_set:
-    temp_file_name = 'User_' + user_id + '.txt' # tappy file names have the format of `User_[UserID].txt`
-    if temp_file_name in files: # check to see if the user ID is in our valid user set
+    temp_file_name = 'User_' + user_id + '.txt'  # tappy file names have the format of `User_[UserID].txt`
+    if temp_file_name in files:  # check to see if the user ID is in our valid user set
         temp_data = read_user_file(temp_file_name)
-        user_df.loc[user_id] = temp_data # adding data to our DataFrame
+        user_df.loc[user_id] = temp_data  # adding data to our DataFrame
 
 print(user_df.head())
 
-
-#%% Change numeric data into appropriate format
+# %% Change numeric data into appropriate format
 
 # force some columns to have numeric data type
 user_df['BirthYear'] = pd.to_numeric(user_df['BirthYear'], errors='coerce')
 user_df['DiagnosisYear'] = pd.to_numeric(user_df['DiagnosisYear'], errors='coerce')
 
-
-#%% "Binarize" true-false data
+# %% "Binarize" true-false data
 
 user_df = user_df.rename(index=str, columns={'Gender': 'Female'})  # renaming `Gender` to `Female`
 user_df['Female'] = user_df['Female'] == 'Female'  # change string data to boolean data
 user_df['Female'] = user_df['Female'].astype(int)  # change boolean data to binary data
 
-str_to_binary_columns = ['Parkinsons', 'Tremors', 'Levadopa', 'DA', 'MAOB', 'Other']  # columns to be converted to binary data
+str_to_binary_columns = ['Parkinsons', 'Tremors', 'Levadopa', 'DA', 'MAOB',
+                         'Other']  # columns to be converted to binary data
 
 for column in str_to_binary_columns:
     user_df[column] = user_df[column] == 'True'
     user_df[column] = user_df[column].astype(int)
 
-
-#%% Dummy variable (one-hot encoding)
+# %% Dummy variable (one-hot encoding)
 
 # prior processing for `Impact` column
 user_df.loc[
@@ -75,37 +71,33 @@ user_df.loc[
     (user_df['Impact'] != 'Mild') &
     (user_df['Impact'] != 'Severe'), 'Impact'] = 'None'
 
-
 to_dummy_column_indices = ['Sided', 'UPDRS', 'Impact']  # columns to be one-hot encoded
 
 for column in to_dummy_column_indices:
     user_df = pd.concat([
         user_df.iloc[:, : user_df.columns.get_loc(column)],
         pd.get_dummies(user_df[column], prefix=str(column)),
-        user_df.iloc[:, user_df.columns.get_loc(column) + 1 :]
+        user_df.iloc[:, user_df.columns.get_loc(column) + 1:]
     ], axis=1)
 
 print(user_df.head())
 
-
-#%% Explore the second dataset
+# %% Explore the second dataset
 
 file_name = '0EA27ICBLF_1607.txt'  # an arbitrary file to explore
 
-
 df = pd.read_csv(
     'data/Tappy Data/' + file_name,
-    delimiter = '\t',
-    index_col = False,
-    names = ['UserKey', 'Date', 'Timestamp', 'Hand', 'Hold time', 'Direction', 'Latency time', 'Flight time']
+    delimiter='\t',
+    index_col=False,
+    names=['UserKey', 'Date', 'Timestamp', 'Hand', 'Hold time', 'Direction', 'Latency time', 'Flight time']
 )
 
 df = df.drop('UserKey', axis=1)
 
 print(df.head())
 
-
-#%% Format datetime data
+# %% Format datetime data
 
 df['Date'] = pd.to_datetime(df['Date'], errors='coerce', format='%y%M%d').dt.date
 # converting time data to numeric
@@ -116,15 +108,14 @@ df = df.dropna(axis=0)
 
 print(df.head())
 
-
-#%% Remove incorrect data
+# %% Remove incorrect data
 
 # cleaning data in Hand
 df = df[
     (df['Hand'] == 'L') |
     (df['Hand'] == 'R') |
     (df['Hand'] == 'S')
-]
+    ]
 
 # cleaning data in Direction
 df = df[
@@ -137,21 +128,19 @@ df = df[
     (df['Direction'] == 'SL') |
     (df['Direction'] == 'SR') |
     (df['Direction'] == 'SS')
-]
+    ]
 
 print(df.head())
 
+# %% Group by direction (hand transition)
 
-#%% Group by direction (hand transition)
-
-numeric_columns = ['Hold time', 'Latency time', 'Flight time', 'Direction']
+numeric_columns = ['Hold time', 'Latency time', 'Flight time']
 numeric_df = df[numeric_columns]
-direction_group_df = numeric_df.groupby('Direction').mean()
+direction_grouped_df = df.groupby('Direction')[numeric_columns].mean()
+print(direction_grouped_df)
 
-print(direction_group_df)
 
-
-#%% Combine into one function
+# %% Combine into one function
 
 def read_tappy(file_name):
     df = pd.read_csv(
@@ -191,7 +180,7 @@ def read_tappy(file_name):
         (df['Direction'] == 'SS')
         ]
 
-    direction_group_df = df.groupby('Direction').mean()
+    direction_group_df = df.groupby('Direction')[numeric_columns].mean()
     del df
     gc.collect()
 
@@ -214,10 +203,11 @@ def process_user(user_id, filenames):
     return np.nanmean(running_user_data, axis=0)  # ignoring NaNs while calculating the mean
 
 
-#%% Run through all available data
+# %% Run through all available data
 
-import warnings; warnings.filterwarnings("ignore")
+import warnings
 
+warnings.filterwarnings("ignore")
 
 filenames = os.listdir('data/Tappy Data/')
 
@@ -238,8 +228,7 @@ user_tappy_df[user_tappy_df < 0] = 0
 
 print(user_tappy_df.head())
 
-
-#%% Save processed data
+# %% Save processed data
 
 combined_user_df = pd.concat([user_df, user_tappy_df], axis=1)
 print(combined_user_df.head())
