@@ -46,6 +46,16 @@ With the following software and hardware list you can run all code files present
 | 1-16 | Git | Windows, Mac OS X, and Linux (Any) |
 
 
+## Errata
+* Page 110, 157, 195, 238, 274, 304, 345, 378, 426, 453, 490, 539, 607:
+
+  "Be sure to check out the companion website for this book at http://pycharm-book.com."
+
+   _**should be**_
+
+
+  "Be sure to check out the companion website for this book at [pycharm-book.com ](https://pycharm-book.com/)"
+
 ### Related products
 * Learn Python Programming - Third Edition [[Packt]](https://www.packtpub.com/product/learn-python-programming-third-edition/9781801815093?utm_source=github&utm_medium=repository&utm_campaign=9781801815093) [[Amazon]](https://www.amazon.com/dp/1801815097)
 
