@@ -21,7 +21,7 @@ class BankAccountTestCase(unittest.TestCase):
     def test_deposit(self):
         test_account = BankAccount("Bruce Van Horn", "123355-23434", 0)
         test_account.deposit(4000)
-        self.assertEquals(test_account.balance, 4000)
+        self.assertEqual(test_account.balance, 4000)
 
     def test_deposit_negative_number_fail(self):
         test_account = BankAccount("Bruce Van Horn", "123355-23434", 4000)
